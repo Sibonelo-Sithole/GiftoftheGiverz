@@ -1,36 +1,55 @@
 
+# GiftoftheGiverz - Continuous Integration Pipeline
+
 trigger:
-- master
+  branches:
+    include:
+      - master
 
 pool:
   vmImage: 'windows-latest'
 
+variables:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+
 steps:
+
+# 1. Install NuGet
 - task: NuGetToolInstaller@1
   displayName: 'Install NuGet'
 
+# 2. Restore project dependencies
 - task: NuGetCommand@2
-  displayName: 'Restore dependencies'
+  displayName: 'Restore NuGet Dependencies'
   inputs:
     command: 'restore'
-    restoreSolution: '**/*.sln'
+    restoreSolution: '$(solution)'
 
+# 3. Build the complete solution
 - task: VSBuild@1
-  displayName: 'Build Visual Studio solution'
+  displayName: 'Build GiftoftheGiverz Solution'
   inputs:
-    solution: '**/*.sln'
-    platform: 'Any CPU'
-    configuration: 'Release'
+    solution: '$(solution)'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+    clean: true
+    maximumCpuCount: true
 
+# 4. Execute automated unit tests
 - task: VSTest@2
-  displayName: 'Run GiftoftheGiverz unit tests'
+  displayName: 'Run GiftoftheGiverz Unit Tests'
   inputs:
     testSelector: 'testAssemblies'
     testAssemblyVer2: |
-      **\GiftoftheGiverz.Tests.dll
+      **\bin\**\GiftoftheGiverz.Tests.dll
       !**\obj\**
     searchFolder: '$(System.DefaultWorkingDirectory)'
-    platform: 'Any CPU'
-    configuration: 'Release'
+    vsTestVersion: '17.0'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
     failOnMinTestsNotRun: true
     minimumExpectedTests: '1'
+    publishRunAttachments: true
+    testRunTitle: 'GiftoftheGiverz Automated Unit Tests'
