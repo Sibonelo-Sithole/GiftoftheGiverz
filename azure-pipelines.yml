@@ -37,16 +37,23 @@ steps:
     clean: true
     maximumCpuCount: true
 
-# 4. Execute automated unit tests
+# 4. Install Visual Studio Test Platform
+- task: VisualStudioTestPlatformInstaller@1
+  displayName: 'Install Visual Studio Test Platform'
+  inputs:
+    packageFeedSelector: 'nugetOrg'
+    versionSelector: 'latestStable'
+
+# 5. Execute automated unit tests
 - task: VSTest@2
   displayName: 'Run GiftoftheGiverz Unit Tests'
   inputs:
     testSelector: 'testAssemblies'
     testAssemblyVer2: |
-      **\bin\**\GiftoftheGiverz.Tests.dll
+      **\GiftoftheGiverz.Tests.dll
       !**\obj\**
     searchFolder: '$(System.DefaultWorkingDirectory)'
-    vsTestVersion: '17.0'
+    vsTestVersion: 'toolsInstaller'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
     failOnMinTestsNotRun: true
