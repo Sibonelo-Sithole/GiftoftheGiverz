@@ -16,19 +16,18 @@ steps:
     restoreSolution: '**/*.sln'
 
 - task: VSBuild@1
-  displayName: 'Build solution'
+  displayName: 'Build Visual Studio solution'
   inputs:
     solution: '**/*.sln'
     platform: 'Any CPU'
     configuration: 'Release'
 
 - task: VSTest@2
-  displayName: 'Run automated unit tests'
+  displayName: 'Run GiftoftheGiverz unit tests'
   inputs:
     testSelector: 'testAssemblies'
     testAssemblyVer2: |
-      **\*Tests.dll
-      **\*Test.dll
+      **\GiftoftheGiverz.Tests.dll
       !**\obj\**
     searchFolder: '$(System.DefaultWorkingDirectory)'
     platform: 'Any CPU'
